@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>TVTogel — Clone Template</title>
+  <meta name="description" content="Template halaman hasil togel / jadwal mirip tvtogel.eu.com. Ganti sumber data sesuai kebutuhan." />
+  <style>
+    /* Simple, clean styling (no external deps) */
+    :root{--accent:#0b6cff;--muted:#666}
+    body{font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; margin:0; background:#f7f8fb; color:#111}
+    .container{max-width:1100px;margin:28px auto;padding:20px}
+    header{display:flex;align-items:center;justify-content:space-between;padding:12px 0}
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo{width:48px;height:48px;border-radius:8px;background:linear-gradient(135deg,var(--accent),#3fb7ff);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700}
+    h1{margin:0;font-size:20px}
+    .sub{color:var(--muted);font-size:13px}
+
+    .grid{display:grid;grid-template-columns:1fr 340px;gap:20px;margin-top:18px}
+    .card{background:#fff;border-radius:12px;padding:14px;box-shadow:0 6px 18px rgba(18,30,60,0.06)}
+
+    /* Result table */
+    table{width:100%;border-collapse:collapse}
+    th,td{padding:10px 8px;text-align:left;border-bottom:1px solid #f0f2f6}
+    th{font-size:13px;color:var(--muted)}
+    .num{font-weight:700;font-size:16px}
+
+    /* sidebar */
+    .sidebar-section{margin-bottom:14px}
+    .links a{display:block;padding:8px 10px;border-radius:8px;text-decoration:none;color:var(--accent);font-weight:600}
+
+    /* banner / promocard */
+    .promo{display:flex;gap:12px;align-items:center}
+    .promo img{width:100%;height:100px;object-fit:cover;border-radius:8px}
+    .small{font-size:12px;color:var(--muted)}
+
+    /* responsive */
+    @media (max-width:900px){.grid{grid-template-columns:1fr;}.sidebar{order:2}}
+
+    footer{margin-top:22px;text-align:center;color:var(--muted);font-size:13px}
+
+    /* tiny helpers */
+    .muted{color:var(--muted)}
+    .row{display:flex;gap:12px;align-items:center}
+    .btn{background:var(--accent);color:#fff;padding:8px 12px;border-radius:8px;text-decoration:none;font-weight:700}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="brand">
+        <div class="logo">TG</div>
+        <div>
+          <h1>TVTOGEL — Template</h1>
+          <div class="sub">Tampilan mirip situs referensi. Data contoh — ganti sumber data pada script.</div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="muted">Last update: <span id="lastUpdate">—</span></div>
+        <a class="btn" href="#" id="refreshBtn">Refresh</a>
+      </div>
+    </header>
+
+    <div class="grid">
+      <main>
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <h2 style="margin:0">Hasil Terakhir</h2>
+            <div class="small">Data disusun otomatis</div>
+          </div>
+
+          <div style="margin-top:12px;overflow:auto">
+            <table id="resultsTable" aria-live="polite">
+              <thead>
+                <tr>
+                  <th>Pasaran</th>
+                  <th>Periode</th>
+                  <th>Angka</th>
+                  <th>Catatan</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- rows injected by JS -->
+              </tbody>
+            </table>
+          </div>
+
+        </div>
+
+        <div class="card" style="margin-top:16px">
+          <h3 style="margin:0 0 8px 0">Jadwal & Pengumuman</h3>
+          <div id="announcements">Memuat pengumuman...</div>
+        </div>
+
+        <div class="card" style="margin-top:16px">
+          <h3 style="margin:0 0 8px 0">Link Alternatif</h3>
+          <div id="altLinks" class="links">Memuat link alternatif...</div>
+        </div>
+      </main>
+
+      <aside class="sidebar">
+        <div class="card sidebar-section">
+          <h4 style="margin:0 0 8px 0">Promo</h4>
+          <div class="promo">
+            <img src="https://via.placeholder.com/300x100?text=Banner" alt="promo">
+            <div>
+              <div style="font-weight:700">Adukan Layanan</div>
+              <div class="small">Informasi dan panduan singkat</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card sidebar-section">
+          <h4 style="margin:0 0 8px 0">Statistik</h4>
+          <div id="stats">Memuat statistik...</div>
+        </div>
+
+        <div class="card sidebar-section">
+          <h4 style="margin:0 0 8px 0">Kontak / Sosial</h4>
+          <div class="small">Telegram / WhatsApp / IG — letakkan link di sini</div>
+        </div>
+      </aside>
+    </div>
+
+    <footer class="muted">Template dibuat untuk keperluan demo — jangan gunakan untuk aktivitas ilegal. &copy; Template</footer>
+  </div>
+
+  <script>
+    // ------------------------------
+    // Mock data + client fetch logic
+    // ------------------------------
+
+    // NOTE: Untuk produksi, ganti `DATA_API` ke endpoint yang mengembalikan JSON
+    // Format contoh yang diharapkan (array hasil):
+    /*
+    [
+      {"market":"Singapore","period":"2025-11-22","number":"1234","note":"Malem"},
+      {"market":"Hongkong","period":"2025-11-22","number":"5678","note":"Siang"}
+    ]
+    */
+
+    const DATA_API = null; // <-- ganti dengan URL API Anda, misal: 'https://api.example.com/results'
+
+    const mock = {
+      lastUpdate: new Date().toLocaleString('id-ID'),
+      results: [
+        {market: 'Singapore', period: '2025-11-22 17:45', number: '6321', note: 'Malam'},
+        {market: 'Hongkong', period: '2025-11-22 16:00', number: '0842', note: 'Siang'},
+        {market: 'Sydney', period: '2025-11-22 15:00', number: '7139', note: 'Sore'}
+      ],
+      announcements: 'Server maintenance setiap Senin 02:00-03:00 WIB. Gunakan link alternatif saat gangguan.',
+      altLinks: [
+        {text: 'Link 1', href: '#'},
+        {text: 'Link 2', href: '#'}
+      ],
+      stats: {totalMarkets: 12, lastFetched: '3 menit lalu'}
+    }
+
+    function renderResults(data){
+      const tbody = document.querySelector('#resultsTable tbody');
+      tbody.innerHTML = '';
+      data.results.forEach(r=>{
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td>${escapeHtml(r.market)}</td><td>${escapeHtml(r.period)}</td><td class='num'>${escapeHtml(r.number)}</td><td class='small'>${escapeHtml(r.note||'')}</td>`;
+        tbody.appendChild(tr);
+      });
+      document.getElementById('lastUpdate').textContent = data.lastUpdate || '-';
+      document.getElementById('announcements').textContent = data.announcements || '-';
+      const alt = document.getElementById('altLinks'); alt.innerHTML = '';
+      (data.altLinks||[]).forEach(a=>{ const el=document.createElement('a'); el.href=a.href; el.textContent=a.text; alt.appendChild(el)});
+      document.getElementById('stats').textContent = `Pasaran: ${data.stats?.totalMarkets || '-'} • Terakhir: ${data.stats?.lastFetched || '-'}`;
+    }
+
+    function escapeHtml(s){ if(!s && s!==0) return ''; return String(s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;"}[c]; }); }
+
+    async function fetchData(){
+      try{
+        if(!DATA_API){
+          // gunakan data mock
+          renderResults(mock);
+          return;
+        }
+        const resp = await fetch(DATA_API);
+        if(!resp.ok) throw new Error('Fetch error: '+resp.status);
+        const data = await resp.json();
+        // normalize minimal structure
+        const payload = {
+          lastUpdate: new Date().toLocaleString('id-ID'),
+          results: data.results || data || [],
+          announcements: data.announcements || '',
+          altLinks: data.altLinks || [],
+          stats: data.stats || {}
+        };
+        renderResults(payload);
+      }catch(err){
+        console.error(err);
+        // fallback ke mock saat error
+        renderResults(mock);
+      }
+    }
+
+    document.getElementById('refreshBtn').addEventListener('click', (e)=>{ e.preventDefault(); fetchData(); });
+
+    // auto load
+    fetchData();
+  </script>
+</body>
+</html>
+username akun outlook : ey.ganteng@outlook.com
+password : Ey06111981
+
+407499
